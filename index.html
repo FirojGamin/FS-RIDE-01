@@ -1,41 +1,1830 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Multi-User Car Billing</title>
-  <script type="module" src="script.js"></script>
-</head>
-<body>
-  <h1>🚗 Car Billing - Multi-User Expense System</h1>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Car Travel Services Billing System</title>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-tabs li {
+            margin-right: 10px;
+        }
+        .nav-tabs a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            background-color: #f1f1f1;
+            border-radius: 5px 5px 0 0;
+        }
+        .nav-tabs a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        form {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        input, select, button {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: inline-block;
+            width: 150px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .alert-error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .print-only {
+                display: block;
+            }
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head><body>
+<div class="container">
+<h1>Car Travel Services Billing System</h1>
+<ul class="nav-tabs no-print">
+<li><a class="active" data-tab="dashboard" href="#">Dashboard</a></li>
+<li><a data-tab="clients" href="#">Clients</a></li>
+<li><a data-tab="vehicles" href="#">Vehicles</a></li>
+<li><a data-tab="trips" href="#">Trips</a></li>
+<li><a data-tab="billing" href="#">Billing</a></li>
+<li><a data-tab="reports" href="#">Reports</a></li>
+</ul>
+<!-- Dashboard Tab -->
+<div class="tab-content active" id="dashboard">
+<h2>Dashboard</h2>
+<div class="stats">
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+<div style="width: 30%; background-color: #e6f7ff; padding: 15px; border-radius: 5px;">
+<h3>Active Clients</h3>
+<p id="active-clients-count">0</p>
+</div>
+<div style="width: 30%; background-color: #fff7e6; padding: 15px; border-radius: 5px;">
+<h3>Available Vehicles</h3>
+<p id="available-vehicles-count">0</p>
+</div>
+<div style="width: 30%; background-color: #f6ffed; padding: 15px; border-radius: 5px;">
+<h3>Monthly Revenue</h3>
+<p id="monthly-revenue">$0.00</p>
+</div>
+</div>
+</div>
+<h3>Recent Trips</h3>
+<table id="recent-trips-table">
+<thead>
+<tr>
+<th>Trip ID</th>
+<th>Client</th>
+<th>Vehicle</th>
+<th>Date</th>
+<th>Distance (km)</th>
+<th>Amount</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<!-- Recent trips will be populated here -->
+</tbody>
+</table>
+<h3>Pending Invoices</h3>
+<table id="pending-invoices-table">
+<thead>
+<tr>
+<th>Invoice #</th>
+<th>Client</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Due Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<!-- Pending invoices will be populated here -->
+</tbody>
+</table>
+</div>
+<!-- Clients Tab -->
+<div class="tab-content" id="clients">
+<h2>Client Management</h2>
+<div class="search-box no-print">
+<input id="client-search" placeholder="Search clients..." type="text"/>
+<button onclick="searchClients()">Search</button>
+<button onclick="resetClientSearch()">Reset</button>
+<button onclick="showAddClientForm()" style="float: right;">Add New Client</button>
+</div>
+<div class="no-print" id="add-client-form" style="display: none;">
+<h3>Add New Client</h3>
+<form id="client-form">
+<input id="client-id" type="hidden"/>
+<div class="form-group">
+<label for="client-name">Name:</label>
+<input id="client-name" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="client-email">Email:</label>
+<input id="client-email" type="email"/>
+</div>
+<div class="form-group">
+<label for="client-phone">Phone:</label>
+<input id="client-phone" required="" type="tel"/>
+</div>
+<div class="form-group">
+<label for="client-address">Address:</label>
+<input id="client-address" type="text"/>
+</div>
+<div class="form-group">
+<label for="client-company">Company:</label>
+<input id="client-company" type="text"/>
+</div>
+<div class="form-group">
+<label for="client-tax-id">Tax ID:</label>
+<input id="client-tax-id" type="text"/>
+</div>
+<button onclick="saveClient()" type="button">Save Client</button>
+<button onclick="cancelClientForm()" type="button">Cancel</button>
+</form>
+</div>
+<div class="alert" id="client-message" style="display: none;"></div>
+<table id="clients-table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Company</th>
+<th class="no-print">Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Clients will be populated here -->
+</tbody>
+</table>
+</div>
+<!-- Vehicles Tab -->
+<div class="tab-content" id="vehicles">
+<h2>Vehicle Management</h2>
+<div class="search-box no-print">
+<input id="vehicle-search" placeholder="Search vehicles..." type="text"/>
+<button onclick="searchVehicles()">Search</button>
+<button onclick="resetVehicleSearch()">Reset</button>
+<button onclick="showAddVehicleForm()" style="float: right;">Add New Vehicle</button>
+</div>
+<div class="no-print" id="add-vehicle-form" style="display: none;">
+<h3>Add New Vehicle</h3>
+<form id="vehicle-form">
+<input id="vehicle-id" type="hidden"/>
+<div class="form-group">
+<label for="vehicle-make">Make:</label>
+<input id="vehicle-make" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="vehicle-model">Model:</label>
+<input id="vehicle-model" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="vehicle-year">Year:</label>
+<input id="vehicle-year" max="2099" min="1900" required="" type="number"/>
+</div>
+<div class="form-group">
+<label for="vehicle-registration">Registration:</label>
+<input id="vehicle-registration" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="vehicle-type">Type:</label>
+<select id="vehicle-type" required="">
+<option value="sedan">Sedan</option>
+<option value="suv">SUV</option>
+<option value="van">Van</option>
+<option value="luxury">Luxury</option>
+<option value="other">Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="vehicle-rate">Rate per km:</label>
+<input id="vehicle-rate" min="0" required="" step="0.01" type="number"/>
+</div>
+<div class="form-group">
+<label for="vehicle-status">Status:</label>
+<select id="vehicle-status" required="">
+<option value="available">Available</option>
+<option value="maintenance">Maintenance</option>
+<option value="unavailable">Unavailable</option>
+</select>
+</div>
+<button onclick="saveVehicle()" type="button">Save Vehicle</button>
+<button onclick="cancelVehicleForm()" type="button">Cancel</button>
+</form>
+</div>
+<div class="alert" id="vehicle-message" style="display: none;"></div>
+<table id="vehicles-table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Make/Model</th>
+<th>Year</th>
+<th>Registration</th>
+<th>Type</th>
+<th>Rate/km</th>
+<th>Status</th>
+<th class="no-print">Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Vehicles will be populated here -->
+</tbody>
+</table>
+</div>
+<!-- Trips Tab -->
+<div class="tab-content" id="trips">
+<h2>Trip Management</h2>
+<div class="search-box no-print">
+<input id="trip-search" placeholder="Search trips..." type="text"/>
+<button onclick="searchTrips()">Search</button>
+<button onclick="resetTripSearch()">Reset</button>
+<button onclick="showAddTripForm()" style="float: right;">Add New Trip</button>
+</div>
+<div class="no-print" id="add-trip-form" style="display: none;">
+<h3>Add New Trip</h3>
+<form id="trip-form">
+<input id="trip-id" type="hidden"/>
+<div class="form-group">
+<label for="trip-client">Client:</label>
+<select id="trip-client" required="">
+<!-- Clients will be populated here -->
+</select>
+</div>
+<div class="form-group">
+<label for="trip-vehicle">Vehicle:</label>
+<select id="trip-vehicle" required="">
+<!-- Vehicles will be populated here -->
+</select>
+</div>
+<div class="form-group">
+<label for="trip-date">Date:</label>
+<input id="trip-date" required="" type="date"/>
+</div>
+<div class="form-group">
+<label for="trip-start-location">Start Location:</label>
+<input id="trip-start-location" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="trip-end-location">End Location:</label>
+<input id="trip-end-location" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="trip-distance">Distance (km):</label>
+<input id="trip-distance" min="0" required="" step="0.1" type="number"/>
+</div>
+<div class="form-group">
+<label for="trip-duration">Duration (hours):</label>
+<input id="trip-duration" min="0" required="" step="0.1" type="number"/>
+</div>
+<div class="form-group">
+<label for="trip-notes">Notes:</label>
+<input id="trip-notes" type="text"/>
+</div>
+<button onclick="saveTrip()" type="button">Save Trip</button>
+<button onclick="cancelTripForm()" type="button">Cancel</button>
+</form>
+</div>
+<div class="alert" id="trip-message" style="display: none;"></div>
+<table id="trips-table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Client</th>
+<th>Vehicle</th>
+<th>Date</th>
+<th>Route</th>
+<th>Distance</th>
+<th>Amount</th>
+<th>Status</th>
+<th class="no-print">Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Trips will be populated here -->
+</tbody>
+</table>
+</div>
+<!-- Billing Tab -->
+<div class="tab-content" id="billing">
+<h2>Billing Management</h2>
+<div class="search-box no-print">
+<input id="invoice-search" placeholder="Search invoices..." type="text"/>
+<button onclick="searchInvoices()">Search</button>
+<button onclick="resetInvoiceSearch()">Reset</button>
+<button onclick="generateInvoice()" style="float: right;">Generate Invoice</button>
+</div>
+<div class="no-print" id="generate-invoice-form" style="display: none;">
+<h3>Generate Invoice</h3>
+<form id="invoice-form">
+<div class="form-group">
+<label for="invoice-client">Client:</label>
+<select id="invoice-client" required="">
+<!-- Clients will be populated here -->
+</select>
+</div>
+<div class="form-group">
+<label for="invoice-date">Invoice Date:</label>
+<input id="invoice-date" required="" type="date"/>
+</div>
+<div class="form-group">
+<label for="invoice-due-date">Due Date:</label>
+<input id="invoice-due-date" required="" type="date"/>
+</div>
+<div class="form-group">
+<label for="invoice-notes">Notes:</label>
+<textarea id="invoice-notes" rows="3"></textarea>
+</div>
+<h4>Select Trips to Include</h4>
+<table id="unbilled-trips-table">
+<thead>
+<tr>
+<th>Select</th>
+<th>Trip ID</th>
+<th>Date</th>
+<th>Route</th>
+<th>Distance</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+<!-- Unbilled trips will be populated here -->
+</tbody>
+</table>
+<button onclick="createInvoice()" type="button">Create Invoice</button>
+<button onclick="cancelInvoiceForm()" type="button">Cancel</button>
+</form>
+</div>
+<div class="alert" id="invoice-message" style="display: none;"></div>
+<table id="invoices-table">
+<thead>
+<tr>
+<th>Invoice #</th>
+<th>Client</th>
+<th>Date</th>
+<th>Due Date</th>
+<th>Amount</th>
+<th>Status</th>
+<th class="no-print">Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Invoices will be populated here -->
+</tbody>
+</table>
+<div id="invoice-details" style="display: none;">
+<h3>Invoice Details</h3>
+<div id="invoice-details-content"></div>
+<button class="no-print" onclick="printInvoice()">Print Invoice</button>
+<button class="no-print" onclick="closeInvoiceDetails()">Close</button>
+</div>
+</div>
+<!-- Reports Tab -->
+<div class="tab-content" id="reports">
+<h2>Reports</h2>
+<div class="no-print">
+<div class="form-group">
+<label for="report-type">Report Type:</label>
+<select id="report-type">
+<option value="revenue">Revenue Report</option>
+<option value="trips">Trips Report</option>
+<option value="clients">Clients Report</option>
+<option value="vehicles">Vehicles Report</option>
+</select>
+</div>
+<div class="form-group">
+<label for="report-period">Period:</label>
+<select id="report-period">
+<option value="today">Today</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+<option value="quarter">This Quarter</option>
+<option value="year">This Year</option>
+<option value="custom">Custom Range</option>
+</select>
+</div>
+<div id="custom-date-range" style="display: none;">
+<div class="form-group">
+<label for="report-start-date">Start Date:</label>
+<input id="report-start-date" type="date"/>
+</div>
+<div class="form-group">
+<label for="report-end-date">End Date:</label>
+<input id="report-end-date" type="date"/>
+</div>
+</div>
+<button onclick="generateReport()">Generate Report</button>
+<button onclick="exportReport()">Export to CSV</button>
+</div>
+<div id="report-results">
+<h3 id="report-title">Select report parameters and click "Generate Report"</h3>
+<div id="report-content"></div>
+</div>
+</div>
+</div>
+<script>
+        // Data storage
+        let clients = [];
+        let vehicles = [];
+        let trips = [];
+        let invoices = [];
+        let nextClientId = 1;
+        let nextVehicleId = 1;
+        let nextTripId = 1;
+        let nextInvoiceId = 1;
 
-  <div id="auth-section">
-    <h2>Register</h2>
-    <input type="text" id="reg-name" placeholder="Full Name" />
-    <input type="email" id="reg-email" placeholder="Email" />
-    <input type="password" id="reg-password" placeholder="Password" />
-    <button onclick="register()">Register</button>
+        // DOM elements
+        const tabLinks = document.querySelectorAll('.nav-tabs a');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-    <h2>Login</h2>
-    <input type="email" id="login-email" placeholder="Email" />
-    <input type="password" id="login-password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-  </div>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load any saved data from localStorage
+            loadData();
+            
+            // Set up tab navigation
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update active content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Refresh the tab content if needed
+                    if (tabId === 'dashboard') {
+                        updateDashboard();
+                    } else if (tabId === 'clients') {
+                        displayClients();
+                    } else if (tabId === 'vehicles') {
+                        displayVehicles();
+                    } else if (tabId === 'trips') {
+                        displayTrips();
+                    } else if (tabId === 'billing') {
+                        displayInvoices();
+                    }
+                });
+            });
+            
+            // Set up report period toggle
+            document.getElementById('report-period').addEventListener('change', function() {
+                const customRangeDiv = document.getElementById('custom-date-range');
+                if (this.value === 'custom') {
+                    customRangeDiv.style.display = 'block';
+                } else {
+                    customRangeDiv.style.display = 'none';
+                }
+            });
+            
+            // Initialize dashboard
+            updateDashboard();
+            
+            // Set today's date as default for forms
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trip-date').value = today;
+            document.getElementById('invoice-date').value = today;
+            
+            // Set due date to 30 days from today
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('invoice-due-date').value = dueDate.toISOString().split('T')[0];
+        });
 
-  <div id="app-section" style="display:none;">
-    <button onclick="logout()">Logout</button>
-    <h2>Add Expense</h2>
-    <input type="date" id="exp-date" />
-    <input type="text" id="exp-type" placeholder="Type (Fuel, Toll, etc)" />
-    <input type="number" id="exp-usd" placeholder="Amount (USD)" />
-    <textarea id="exp-notes" placeholder="Notes"></textarea>
-    <button onclick="addExpense()">Add Expense</button>
+        // Data management functions
+        function loadData() {
+            // Load data from localStorage if available
+            if (localStorage.getItem('carTravelBillingSystem')) {
+                const data = JSON.parse(localStorage.getItem('carTravelBillingSystem'));
+                clients = data.clients || [];
+                vehicles = data.vehicles || [];
+                trips = data.trips || [];
+                invoices = data.invoices || [];
+                nextClientId = data.nextClientId || 1;
+                nextVehicleId = data.nextVehicleId || 1;
+                nextTripId = data.nextTripId || 1;
+                nextInvoiceId = data.nextInvoiceId || 1;
+            }
+        }
 
-    <h3>Your Expenses</h3>
-    <ul id="expenses-list"></ul>
-    <p id="total-usd"></p>
-    <p id="total-inr"></p>
-  </div>
+        function saveData() {
+            const data = {
+                clients,
+                vehicles,
+                trips,
+                invoices,
+                nextClientId,
+                nextVehicleId,
+                nextTripId,
+                nextInvoiceId
+            };
+            localStorage.setItem('carTravelBillingSystem', JSON.stringify(data));
+        }
+
+        // Client management functions
+        function displayClients(filter = '') {
+            const tbody = document.querySelector('#clients-table tbody');
+            tbody.innerHTML = '';
+            
+            const filteredClients = clients.filter(client => 
+                client.name.toLowerCase().includes(filter.toLowerCase()) || 
+                client.email.toLowerCase().includes(filter.toLowerCase()) ||
+                client.phone.includes(filter) ||
+                (client.company && client.company.toLowerCase().includes(filter.toLowerCase()))
+            );
+            
+            filteredClients.forEach(client => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${client.id}</td>
+                    <td>${client.name}</td>
+                    <td>${client.email || '-'}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.company || '-'}</td>
+                    <td class="no-print">
+                        <button onclick="editClient(${client.id})">Edit</button>
+                        <button onclick="deleteClient(${client.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showAddClientForm() {
+            document.getElementById('client-form').reset();
+            document.getElementById('client-id').value = '';
+            document.getElementById('add-client-form').style.display = 'block';
+            document.getElementById('client-message').style.display = 'none';
+        }
+
+        function cancelClientForm() {
+            document.getElementById('add-client-form').style.display = 'none';
+        }
+
+        function saveClient() {
+            const id = document.getElementById('client-id').value;
+            const name = document.getElementById('client-name').value.trim();
+            const email = document.getElementById('client-email').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+            const address = document.getElementById('client-address').value.trim();
+            const company = document.getElementById('client-company').value.trim();
+            const taxId = document.getElementById('client-tax-id').value.trim();
+            
+            if (!name || !phone) {
+                showMessage('client-message', 'Name and phone are required', 'error');
+                return;
+            }
+            
+            if (id) {
+                // Update existing client
+                const index = clients.findIndex(c => c.id == id);
+                if (index !== -1) {
+                    clients[index] = { id: parseInt(id), name, email, phone, address, company, taxId };
+                }
+                showMessage('client-message', 'Client updated successfully', 'success');
+            } else {
+                // Add new client
+                const newClient = {
+                    id: nextClientId++,
+                    name,
+                    email,
+                    phone,
+                    address,
+                    company,
+                    taxId
+                };
+                clients.push(newClient);
+                showMessage('client-message', 'Client added successfully', 'success');
+            }
+            
+            saveData();
+            document.getElementById('add-client-form').style.display = 'none';
+            displayClients();
+            updateDashboard();
+        }
+
+        function editClient(id) {
+            const client = clients.find(c => c.id == id);
+            if (client) {
+                document.getElementById('client-id').value = client.id;
+                document.getElementById('client-name').value = client.name;
+                document.getElementById('client-email').value = client.email || '';
+                document.getElementById('client-phone').value = client.phone;
+                document.getElementById('client-address').value = client.address || '';
+                document.getElementById('client-company').value = client.company || '';
+                document.getElementById('client-tax-id').value = client.taxId || '';
+                document.getElementById('add-client-form').style.display = 'block';
+                document.getElementById('client-message').style.display = 'none';
+            }
+        }
+
+        function deleteClient(id) {
+            if (confirm('Are you sure you want to delete this client?')) {
+                // Check if client has trips
+                const clientTrips = trips.filter(t => t.clientId == id);
+                if (clientTrips.length > 0) {
+                    alert('Cannot delete client with existing trips. Please delete the trips first.');
+                    return;
+                }
+                
+                clients = clients.filter(c => c.id != id);
+                saveData();
+                displayClients();
+                updateDashboard();
+            }
+        }
+
+        function searchClients() {
+            const filter = document.getElementById('client-search').value;
+            displayClients(filter);
+        }
+
+        function resetClientSearch() {
+            document.getElementById('client-search').value = '';
+            displayClients();
+        }
+
+        // Vehicle management functions
+        function displayVehicles(filter = '') {
+            const tbody = document.querySelector('#vehicles-table tbody');
+            tbody.innerHTML = '';
+            
+            const filteredVehicles = vehicles.filter(vehicle => 
+                vehicle.make.toLowerCase().includes(filter.toLowerCase()) || 
+                vehicle.model.toLowerCase().includes(filter.toLowerCase()) ||
+                vehicle.registration.toLowerCase().includes(filter.toLowerCase()) ||
+                vehicle.type.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredVehicles.forEach(vehicle => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${vehicle.id}</td>
+                    <td>${vehicle.make} ${vehicle.model}</td>
+                    <td>${vehicle.year}</td>
+                    <td>${vehicle.registration}</td>
+                    <td>${vehicle.type.charAt(0).toUpperCase() + vehicle.type.slice(1)}</td>
+                    <td>$${vehicle.ratePerKm.toFixed(2)}</td>
+                    <td>${vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}</td>
+                    <td class="no-print">
+                        <button onclick="editVehicle(${vehicle.id})">Edit</button>
+                        <button onclick="deleteVehicle(${vehicle.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showAddVehicleForm() {
+            document.getElementById('vehicle-form').reset();
+            document.getElementById('vehicle-id').value = '';
+            document.getElementById('add-vehicle-form').style.display = 'block';
+            document.getElementById('vehicle-message').style.display = 'none';
+        }
+
+        function cancelVehicleForm() {
+            document.getElementById('add-vehicle-form').style.display = 'none';
+        }
+
+        function saveVehicle() {
+            const id = document.getElementById('vehicle-id').value;
+            const make = document.getElementById('vehicle-make').value.trim();
+            const model = document.getElementById('vehicle-model').value.trim();
+            const year = document.getElementById('vehicle-year').value.trim();
+            const registration = document.getElementById('vehicle-registration').value.trim();
+            const type = document.getElementById('vehicle-type').value;
+            const ratePerKm = parseFloat(document.getElementById('vehicle-rate').value);
+            const status = document.getElementById('vehicle-status').value;
+            
+            if (!make || !model || !year || !registration || isNaN(ratePerKm) || ratePerKm <= 0) {
+                showMessage('vehicle-message', 'Please fill all required fields with valid values', 'error');
+                return;
+            }
+            
+            if (id) {
+                // Update existing vehicle
+                const index = vehicles.findIndex(v => v.id == id);
+                if (index !== -1) {
+                    vehicles[index] = { 
+                        id: parseInt(id), 
+                        make, 
+                        model, 
+                        year: parseInt(year), 
+                        registration, 
+                        type, 
+                        ratePerKm, 
+                        status 
+                    };
+                }
+                showMessage('vehicle-message', 'Vehicle updated successfully', 'success');
+            } else {
+                // Add new vehicle
+                const newVehicle = {
+                    id: nextVehicleId++,
+                    make,
+                    model,
+                    year: parseInt(year),
+                    registration,
+                    type,
+                    ratePerKm,
+                    status
+                };
+                vehicles.push(newVehicle);
+                showMessage('vehicle-message', 'Vehicle added successfully', 'success');
+            }
+            
+            saveData();
+            document.getElementById('add-vehicle-form').style.display = 'none';
+            displayVehicles();
+            updateDashboard();
+        }
+
+        function editVehicle(id) {
+            const vehicle = vehicles.find(v => v.id == id);
+            if (vehicle) {
+                document.getElementById('vehicle-id').value = vehicle.id;
+                document.getElementById('vehicle-make').value = vehicle.make;
+                document.getElementById('vehicle-model').value = vehicle.model;
+                document.getElementById('vehicle-year').value = vehicle.year;
+                document.getElementById('vehicle-registration').value = vehicle.registration;
+                document.getElementById('vehicle-type').value = vehicle.type;
+                document.getElementById('vehicle-rate').value = vehicle.ratePerKm;
+                document.getElementById('vehicle-status').value = vehicle.status;
+                document.getElementById('add-vehicle-form').style.display = 'block';
+                document.getElementById('vehicle-message').style.display = 'none';
+            }
+        }
+
+        function deleteVehicle(id) {
+            if (confirm('Are you sure you want to delete this vehicle?')) {
+                // Check if vehicle has trips
+                const vehicleTrips = trips.filter(t => t.vehicleId == id);
+                if (vehicleTrips.length > 0) {
+                    alert('Cannot delete vehicle with existing trips. Please delete the trips first.');
+                    return;
+                }
+                
+                vehicles = vehicles.filter(v => v.id != id);
+                saveData();
+                displayVehicles();
+                updateDashboard();
+            }
+        }
+
+        function searchVehicles() {
+            const filter = document.getElementById('vehicle-search').value;
+            displayVehicles(filter);
+        }
+
+        function resetVehicleSearch() {
+            document.getElementById('vehicle-search').value = '';
+            displayVehicles();
+        }
+
+        // Trip management functions
+        function displayTrips(filter = '') {
+            const tbody = document.querySelector('#trips-table tbody');
+            tbody.innerHTML = '';
+            
+            const filteredTrips = trips.filter(trip => {
+                const client = clients.find(c => c.id == trip.clientId);
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                
+                return (
+                    (client && client.name.toLowerCase().includes(filter.toLowerCase())) ||
+                    (vehicle && `${vehicle.make} ${vehicle.model}`.toLowerCase().includes(filter.toLowerCase())) ||
+                    trip.startLocation.toLowerCase().includes(filter.toLowerCase()) ||
+                    trip.endLocation.toLowerCase().includes(filter.toLowerCase()) ||
+                    trip.id.toString().includes(filter)
+                );
+            });
+            
+            filteredTrips.forEach(trip => {
+                const client = clients.find(c => c.id == trip.clientId);
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                const amount = calculateTripAmount(trip);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${trip.id}</td>
+                    <td>${client ? client.name : 'Unknown'}</td>
+                    <td>${vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown'}</td>
+                    <td>${formatDate(trip.date)}</td>
+                    <td>${trip.startLocation} to ${trip.endLocation}</td>
+                    <td>${trip.distance} km</td>
+                    <td>$${amount.toFixed(2)}</td>
+                    <td>${trip.invoiceId ? 'Billed' : 'Unbilled'}</td>
+                    <td class="no-print">
+                        <button onclick="editTrip(${trip.id})">Edit</button>
+                        <button onclick="deleteTrip(${trip.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showAddTripForm() {
+            document.getElementById('trip-form').reset();
+            document.getElementById('trip-id').value = '';
+            document.getElementById('trip-date').value = new Date().toISOString().split('T')[0];
+            
+            // Populate client dropdown
+            const clientSelect = document.getElementById('trip-client');
+            clientSelect.innerHTML = '';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                clientSelect.appendChild(option);
+            });
+            
+            // Populate vehicle dropdown
+            const vehicleSelect = document.getElementById('trip-vehicle');
+            vehicleSelect.innerHTML = '';
+            vehicles.forEach(vehicle => {
+                const option = document.createElement('option');
+                option.value = vehicle.id;
+                option.textContent = `${vehicle.make} ${vehicle.model} (${vehicle.registration})`;
+                vehicleSelect.appendChild(option);
+            });
+            
+            document.getElementById('add-trip-form').style.display = 'block';
+            document.getElementById('trip-message').style.display = 'none';
+        }
+
+        function cancelTripForm() {
+            document.getElementById('add-trip-form').style.display = 'none';
+        }
+
+        function saveTrip() {
+            const id = document.getElementById('trip-id').value;
+            const clientId = document.getElementById('trip-client').value;
+            const vehicleId = document.getElementById('trip-vehicle').value;
+            const date = document.getElementById('trip-date').value;
+            const startLocation = document.getElementById('trip-start-location').value.trim();
+            const endLocation = document.getElementById('trip-end-location').value.trim();
+            const distance = parseFloat(document.getElementById('trip-distance').value);
+            const duration = parseFloat(document.getElementById('trip-duration').value);
+            const notes = document.getElementById('trip-notes').value.trim();
+            
+            if (!clientId || !vehicleId || !date || !startLocation || !endLocation || isNaN(distance) || distance <= 0 || isNaN(duration) || duration <= 0) {
+                showMessage('trip-message', 'Please fill all required fields with valid values', 'error');
+                return;
+            }
+            
+            if (id) {
+                // Update existing trip
+                const index = trips.findIndex(t => t.id == id);
+                if (index !== -1) {
+                    trips[index] = { 
+                        id: parseInt(id), 
+                        clientId: parseInt(clientId), 
+                        vehicleId: parseInt(vehicleId), 
+                        date, 
+                        startLocation, 
+                        endLocation, 
+                        distance, 
+                        duration, 
+                        notes,
+                        invoiceId: trips[index].invoiceId // Preserve invoiceId
+                    };
+                }
+                showMessage('trip-message', 'Trip updated successfully', 'success');
+            } else {
+                // Add new trip
+                const newTrip = {
+                    id: nextTripId++,
+                    clientId: parseInt(clientId),
+                    vehicleId: parseInt(vehicleId),
+                    date,
+                    startLocation,
+                    endLocation,
+                    distance,
+                    duration,
+                    notes,
+                    invoiceId: null
+                };
+                trips.push(newTrip);
+                showMessage('trip-message', 'Trip added successfully', 'success');
+            }
+            
+            saveData();
+            document.getElementById('add-trip-form').style.display = 'none';
+            displayTrips();
+            updateDashboard();
+        }
+
+        function editTrip(id) {
+            const trip = trips.find(t => t.id == id);
+            if (trip) {
+                document.getElementById('trip-id').value = trip.id;
+                
+                // Populate client dropdown
+                const clientSelect = document.getElementById('trip-client');
+                clientSelect.innerHTML = '';
+                clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    option.selected = client.id == trip.clientId;
+                    clientSelect.appendChild(option);
+                });
+                
+                // Populate vehicle dropdown
+                const vehicleSelect = document.getElementById('trip-vehicle');
+                vehicleSelect.innerHTML = '';
+                vehicles.forEach(vehicle => {
+                    const option = document.createElement('option');
+                    option.value = vehicle.id;
+                    option.textContent = `${vehicle.make} ${vehicle.model} (${vehicle.registration})`;
+                    option.selected = vehicle.id == trip.vehicleId;
+                    vehicleSelect.appendChild(option);
+                });
+                
+                document.getElementById('trip-date').value = trip.date;
+                document.getElementById('trip-start-location').value = trip.startLocation;
+                document.getElementById('trip-end-location').value = trip.endLocation;
+                document.getElementById('trip-distance').value = trip.distance;
+                document.getElementById('trip-duration').value = trip.duration;
+                document.getElementById('trip-notes').value = trip.notes || '';
+                document.getElementById('add-trip-form').style.display = 'block';
+                document.getElementById('trip-message').style.display = 'none';
+            }
+        }
+
+        function deleteTrip(id) {
+            if (confirm('Are you sure you want to delete this trip?')) {
+                // Check if trip is billed
+                const trip = trips.find(t => t.id == id);
+                if (trip && trip.invoiceId) {
+                    alert('Cannot delete trip that is already billed. Please delete the invoice first.');
+                    return;
+                }
+                
+                trips = trips.filter(t => t.id != id);
+                saveData();
+                displayTrips();
+                updateDashboard();
+            }
+        }
+
+        function searchTrips() {
+            const filter = document.getElementById('trip-search').value;
+            displayTrips(filter);
+        }
+
+        function resetTripSearch() {
+            document.getElementById('trip-search').value = '';
+            displayTrips();
+        }
+
+        function calculateTripAmount(trip) {
+            const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+            if (!vehicle) return 0;
+            return trip.distance * vehicle.ratePerKm;
+        }
+
+        // Billing management functions
+        function displayInvoices(filter = '') {
+            const tbody = document.querySelector('#invoices-table tbody');
+            tbody.innerHTML = '';
+            
+            const filteredInvoices = invoices.filter(invoice => {
+                const client = clients.find(c => c.id == invoice.clientId);
+                return (
+                    invoice.id.toString().includes(filter) ||
+                    (client && client.name.toLowerCase().includes(filter.toLowerCase())) ||
+                    invoice.date.includes(filter) ||
+                    invoice.dueDate.includes(filter)
+                );
+            });
+            
+            filteredInvoices.forEach(invoice => {
+                const client = clients.find(c => c.id == invoice.clientId);
+                const invoiceTrips = trips.filter(t => t.invoiceId == invoice.id);
+                const totalAmount = invoiceTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${client ? client.name : 'Unknown'}</td>
+                    <td>${formatDate(invoice.date)}</td>
+                    <td>${formatDate(invoice.dueDate)}</td>
+                    <td>$${totalAmount.toFixed(2)}</td>
+                    <td>${getInvoiceStatus(invoice)}</td>
+                    <td class="no-print">
+                        <button onclick="viewInvoiceDetails(${invoice.id})">View</button>
+                        <button onclick="deleteInvoice(${invoice.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function generateInvoice() {
+            // Populate client dropdown
+            const clientSelect = document.getElementById('invoice-client');
+            clientSelect.innerHTML = '';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                clientSelect.appendChild(option);
+            });
+            
+            // Display unbilled trips
+            const unbilledTrips = trips.filter(t => !t.invoiceId);
+            const tbody = document.querySelector('#unbilled-trips-table tbody');
+            tbody.innerHTML = '';
+            
+            unbilledTrips.forEach(trip => {
+                const client = clients.find(c => c.id == trip.clientId);
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                const amount = calculateTripAmount(trip);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="trip-checkbox" value="${trip.id}" data-client="${trip.clientId}"></td>
+                    <td>${trip.id}</td>
+                    <td>${formatDate(trip.date)}</td>
+                    <td>${trip.startLocation} to ${trip.endLocation}</td>
+                    <td>${trip.distance} km</td>
+                    <td>$${amount.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('generate-invoice-form').style.display = 'block';
+            document.getElementById('invoice-message').style.display = 'none';
+        }
+
+        function cancelInvoiceForm() {
+            document.getElementById('generate-invoice-form').style.display = 'none';
+        }
+
+        function createInvoice() {
+            const clientId = document.getElementById('invoice-client').value;
+            const date = document.getElementById('invoice-date').value;
+            const dueDate = document.getElementById('invoice-due-date').value;
+            const notes = document.getElementById('invoice-notes').value.trim();
+            
+            if (!clientId || !date || !dueDate) {
+                showMessage('invoice-message', 'Please fill all required fields', 'error');
+                return;
+            }
+            
+            // Get selected trips
+            const checkboxes = document.querySelectorAll('.trip-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showMessage('invoice-message', 'Please select at least one trip', 'error');
+                return;
+            }
+            
+            // Verify all selected trips belong to the selected client
+            for (const checkbox of checkboxes) {
+                if (checkbox.dataset.client !== clientId) {
+                    showMessage('invoice-message', 'All selected trips must belong to the same client', 'error');
+                    return;
+                }
+            }
+            
+            // Create new invoice
+            const newInvoice = {
+                id: nextInvoiceId++,
+                clientId: parseInt(clientId),
+                date,
+                dueDate,
+                notes,
+                paid: false
+            };
+            invoices.push(newInvoice);
+            
+            // Update trips with invoice ID
+            checkboxes.forEach(checkbox => {
+                const tripId = parseInt(checkbox.value);
+                const tripIndex = trips.findIndex(t => t.id === tripId);
+                if (tripIndex !== -1) {
+                    trips[tripIndex].invoiceId = newInvoice.id;
+                }
+            });
+            
+            saveData();
+            document.getElementById('generate-invoice-form').style.display = 'none';
+            displayInvoices();
+            displayTrips();
+            updateDashboard();
+            showMessage('invoice-message', 'Invoice created successfully', 'success');
+        }
+
+        function viewInvoiceDetails(id) {
+            const invoice = invoices.find(i => i.id == id);
+            if (!invoice) return;
+            
+            const client = clients.find(c => c.id == invoice.clientId);
+            const invoiceTrips = trips.filter(t => t.invoiceId == invoice.id);
+            const totalAmount = invoiceTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+            
+            let content = `
+                <div class="print-only">
+                    <h1>Invoice #${invoice.id}</h1>
+                    <p><strong>Date:</strong> ${formatDate(invoice.date)}</p>
+                    <p><strong>Due Date:</strong> ${formatDate(invoice.dueDate)}</p>
+                    <p><strong>Status:</strong> ${getInvoiceStatus(invoice)}</p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <h3>From:</h3>
+                        <p>Car Travel Services</p>
+                        <p>123 Service Road</p>
+                        <p>City, State 12345</p>
+                        <p>Phone: (123) 456-7890</p>
+                    </div>
+                    <div>
+                        <h3>To:</h3>
+                        <p>${client ? client.name : 'Unknown'}</p>
+                        ${client && client.company ? `<p>${client.company}</p>` : ''}
+                        ${client && client.address ? `<p>${client.address}</p>` : ''}
+                        ${client && client.phone ? `<p>Phone: ${client.phone}</p>` : ''}
+                        ${client && client.email ? `<p>Email: ${client.email}</p>` : ''}
+                        ${client && client.taxId ? `<p>Tax ID: ${client.taxId}</p>` : ''}
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Date</th>
+                            <th>Vehicle</th>
+                            <th>Route</th>
+                            <th>Distance (km)</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            invoiceTrips.forEach(trip => {
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                const amount = calculateTripAmount(trip);
+                
+                content += `
+                    <tr>
+                        <td>${trip.id}</td>
+                        <td>${formatDate(trip.date)}</td>
+                        <td>${vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown'}</td>
+                        <td>${trip.startLocation} to ${trip.endLocation}</td>
+                        <td>${trip.distance}</td>
+                        <td>$${vehicle ? vehicle.ratePerKm.toFixed(2) : '0.00'}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" style="text-align: right;"><strong>Total:</strong></td>
+                            <td><strong>$${totalAmount.toFixed(2)}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                ${invoice.notes ? `<p><strong>Notes:</strong> ${invoice.notes}</p>` : ''}
+                
+                <div class="no-print">
+                    <label>
+                        <input type="checkbox" id="mark-paid" ${invoice.paid ? 'checked disabled' : ''}>
+                        Mark as paid
+                    </label>
+                    <button onclick="updateInvoiceStatus(${invoice.id})">Update Status</button>
+                </div>
+            `;
+            
+            document.getElementById('invoice-details-content').innerHTML = content;
+            document.getElementById('invoice-details').style.display = 'block';
+        }
+
+        function closeInvoiceDetails() {
+            document.getElementById('invoice-details').style.display = 'none';
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+
+        function updateInvoiceStatus(id) {
+            const invoice = invoices.find(i => i.id == id);
+            if (!invoice) return;
+            
+            const isPaid = document.getElementById('mark-paid').checked;
+            invoice.paid = isPaid;
+            saveData();
+            
+            displayInvoices();
+            updateDashboard();
+            viewInvoiceDetails(id); // Refresh the view
+        }
+
+        function deleteInvoice(id) {
+            if (confirm('Are you sure you want to delete this invoice? This will unbill all associated trips.')) {
+                // Unbill all trips associated with this invoice
+                trips.forEach(trip => {
+                    if (trip.invoiceId == id) {
+                        trip.invoiceId = null;
+                    }
+                });
+                
+                // Remove the invoice
+                invoices = invoices.filter(i => i.id != id);
+                saveData();
+                
+                displayInvoices();
+                displayTrips();
+                updateDashboard();
+            }
+        }
+
+        function searchInvoices() {
+            const filter = document.getElementById('invoice-search').value;
+            displayInvoices(filter);
+        }
+
+        function resetInvoiceSearch() {
+            document.getElementById('invoice-search').value = '';
+            displayInvoices();
+        }
+
+        function getInvoiceStatus(invoice) {
+            if (invoice.paid) return 'Paid';
+            
+            const dueDate = new Date(invoice.dueDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (dueDate < today) return 'Overdue';
+            return 'Pending';
+        }
+
+        // Reports functions
+        function generateReport() {
+            const reportType = document.getElementById('report-type').value;
+            const period = document.getElementById('report-period').value;
+            
+            let startDate, endDate;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (period === 'custom') {
+                startDate = new Date(document.getElementById('report-start-date').value);
+                endDate = new Date(document.getElementById('report-end-date').value);
+                
+                if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    alert('Please select valid start and end dates');
+                    return;
+                }
+                
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
+            } else {
+                startDate = new Date(today);
+                endDate = new Date(today);
+                
+                if (period === 'today') {
+                    endDate.setHours(23, 59, 59, 999);
+                } else if (period === 'week') {
+                    startDate.setDate(today.getDate() - today.getDay());
+                    endDate.setDate(today.getDate() + (6 - today.getDay()));
+                    endDate.setHours(23, 59, 59, 999);
+                } else if (period === 'month') {
+                    startDate.setDate(1);
+                    endDate.setMonth(today.getMonth() + 1);
+                    endDate.setDate(0);
+                    endDate.setHours(23, 59, 59, 999);
+                } else if (period === 'quarter') {
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    startDate.setMonth(quarter * 3);
+                    startDate.setDate(1);
+                    endDate.setMonth((quarter + 1) * 3);
+                    endDate.setDate(0);
+                    endDate.setHours(23, 59, 59, 999);
+                } else if (period === 'year') {
+                    startDate.setMonth(0);
+                    startDate.setDate(1);
+                    endDate.setMonth(11);
+                    endDate.setDate(31);
+                    endDate.setHours(23, 59, 59, 999);
+                }
+            }
+            
+            let title, content;
+            
+            if (reportType === 'revenue') {
+                title = `Revenue Report (${formatDate(startDate)} to ${formatDate(endDate)})`;
+                content = generateRevenueReport(startDate, endDate);
+            } else if (reportType === 'trips') {
+                title = `Trips Report (${formatDate(startDate)} to ${formatDate(endDate)})`;
+                content = generateTripsReport(startDate, endDate);
+            } else if (reportType === 'clients') {
+                title = `Clients Report`;
+                content = generateClientsReport();
+            } else if (reportType === 'vehicles') {
+                title = `Vehicles Report`;
+                content = generateVehiclesReport();
+            }
+            
+            document.getElementById('report-title').textContent = title;
+            document.getElementById('report-content').innerHTML = content;
+        }
+
+        function generateRevenueReport(startDate, endDate) {
+            // Filter invoices within date range
+            const filteredInvoices = invoices.filter(invoice => {
+                const invoiceDate = new Date(invoice.date);
+                return invoiceDate >= startDate && invoiceDate <= endDate;
+            });
+            
+            let totalRevenue = 0;
+            let byClient = {};
+            let byVehicle = {};
+            
+            filteredInvoices.forEach(invoice => {
+                const invoiceTrips = trips.filter(t => t.invoiceId == invoice.id);
+                const invoiceAmount = invoiceTrips.reduce((sum, trip) => {
+                    const amount = calculateTripAmount(trip);
+                    totalRevenue += amount;
+                    
+                    // Group by client
+                    if (!byClient[invoice.clientId]) {
+                        byClient[invoice.clientId] = 0;
+                    }
+                    byClient[invoice.clientId] += amount;
+                    
+                    // Group by vehicle
+                    if (!byVehicle[trip.vehicleId]) {
+                        byVehicle[trip.vehicleId] = 0;
+                    }
+                    byVehicle[trip.vehicleId] += amount;
+                    
+                    return sum + amount;
+                }, 0);
+            });
+            
+            let content = `
+                <p><strong>Total Revenue:</strong> $${totalRevenue.toFixed(2)}</p>
+                
+                <h3>Revenue by Client</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            Object.entries(byClient).forEach(([clientId, amount]) => {
+                const client = clients.find(c => c.id == clientId);
+                const percentage = totalRevenue > 0 ? (amount / totalRevenue * 100).toFixed(1) : 0;
+                
+                content += `
+                    <tr>
+                        <td>${client ? client.name : 'Unknown'}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                        <td>${percentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                </table>
+                
+                <h3>Revenue by Vehicle</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            Object.entries(byVehicle).forEach(([vehicleId, amount]) => {
+                const vehicle = vehicles.find(v => v.id == vehicleId);
+                const percentage = totalRevenue > 0 ? (amount / totalRevenue * 100).toFixed(1) : 0;
+                
+                content += `
+                    <tr>
+                        <td>${vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown'}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                        <td>${percentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                </table>
+            `;
+            
+            return content;
+        }
+
+        function generateTripsReport(startDate, endDate) {
+            // Filter trips within date range
+            const filteredTrips = trips.filter(trip => {
+                const tripDate = new Date(trip.date);
+                return tripDate >= startDate && tripDate <= endDate;
+            });
+            
+            let content = `
+                <p><strong>Total Trips:</strong> ${filteredTrips.length}</p>
+                
+                <h3>Trip Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Vehicle</th>
+                            <th>Route</th>
+                            <th>Distance (km)</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredTrips.forEach(trip => {
+                const client = clients.find(c => c.id == trip.clientId);
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                const amount = calculateTripAmount(trip);
+                const status = trip.invoiceId ? 'Billed' : 'Unbilled';
+                
+                content += `
+                    <tr>
+                        <td>${trip.id}</td>
+                        <td>${formatDate(trip.date)}</td>
+                        <td>${client ? client.name : 'Unknown'}</td>
+                        <td>${vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown'}</td>
+                        <td>${trip.startLocation} to ${trip.endLocation}</td>
+                        <td>${trip.distance}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                </table>
+            `;
+            
+            return content;
+        }
+
+        function generateClientsReport() {
+            let content = `
+                <p><strong>Total Clients:</strong> ${clients.length}</p>
+                
+                <h3>Client Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client ID</th>
+                            <th>Name</th>
+                            <th>Company</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Total Trips</th>
+                            <th>Total Billed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            clients.forEach(client => {
+                const clientTrips = trips.filter(t => t.clientId == client.id);
+                const billedTrips = clientTrips.filter(t => t.invoiceId);
+                const totalBilled = billedTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+                
+                content += `
+                    <tr>
+                        <td>${client.id}</td>
+                        <td>${client.name}</td>
+                        <td>${client.company || '-'}</td>
+                        <td>${client.phone}</td>
+                        <td>${client.email || '-'}</td>
+                        <td>${clientTrips.length}</td>
+                        <td>$${totalBilled.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                </table>
+            `;
+            
+            return content;
+        }
+
+        function generateVehiclesReport() {
+            let content = `
+                <p><strong>Total Vehicles:</strong> ${vehicles.length}</p>
+                
+                <h3>Vehicle Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehicle ID</th>
+                            <th>Make/Model</th>
+                            <th>Registration</th>
+                            <th>Type</th>
+                            <th>Rate/km</th>
+                            <th>Status</th>
+                            <th>Total Trips</th>
+                            <th>Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            vehicles.forEach(vehicle => {
+                const vehicleTrips = trips.filter(t => t.vehicleId == vehicle.id);
+                const totalRevenue = vehicleTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+                
+                content += `
+                    <tr>
+                        <td>${vehicle.id}</td>
+                        <td>${vehicle.make} ${vehicle.model}</td>
+                        <td>${vehicle.registration}</td>
+                        <td>${vehicle.type.charAt(0).toUpperCase() + vehicle.type.slice(1)}</td>
+                        <td>$${vehicle.ratePerKm.toFixed(2)}</td>
+                        <td>${vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}</td>
+                        <td>${vehicleTrips.length}</td>
+                        <td>$${totalRevenue.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                    </tbody>
+                </table>
+            `;
+            
+            return content;
+        }
+
+        function exportReport() {
+            const reportContent = document.getElementById('report-content');
+            const tables = reportContent.getElementsByTagName('table');
+            
+            if (tables.length === 0) {
+                alert('No report data to export');
+                return;
+            }
+            
+            let csvContent = '';
+            
+            for (let i = 0; i < tables.length; i++) {
+                const table = tables[i];
+                const rows = table.querySelectorAll('tr');
+                
+                for (let j = 0; j < rows.length; j++) {
+                    const row = rows[j];
+                    const cols = row.querySelectorAll('th, td');
+                    const rowData = [];
+                    
+                    for (let k = 0; k < cols.length; k++) {
+                        rowData.push(cols[k].textContent.replace(/,/g, ''));
+                    }
+                    
+                    csvContent += rowData.join(',') + '\n';
+                }
+                
+                csvContent += '\n';
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'report.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Dashboard functions
+        function updateDashboard() {
+            // Update counts
+            document.getElementById('active-clients-count').textContent = clients.length;
+            document.getElementById('available-vehicles-count').textContent = 
+                vehicles.filter(v => v.status === 'available').length;
+            
+            // Calculate monthly revenue
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            endOfMonth.setHours(23, 59, 59, 999);
+            
+            const monthlyInvoices = invoices.filter(invoice => {
+                const invoiceDate = new Date(invoice.date);
+                return invoiceDate >= startOfMonth && invoiceDate <= endOfMonth;
+            });
+            
+            const monthlyRevenue = monthlyInvoices.reduce((sum, invoice) => {
+                const invoiceTrips = trips.filter(t => t.invoiceId == invoice.id);
+                return sum + invoiceTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+            }, 0);
+            
+            document.getElementById('monthly-revenue').textContent = `$${monthlyRevenue.toFixed(2)}`;
+            
+            // Update recent trips
+            const recentTrips = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            const tbody = document.querySelector('#recent-trips-table tbody');
+            tbody.innerHTML = '';
+            
+            recentTrips.forEach(trip => {
+                const client = clients.find(c => c.id == trip.clientId);
+                const vehicle = vehicles.find(v => v.id == trip.vehicleId);
+                const amount = calculateTripAmount(trip);
+                const status = trip.invoiceId ? 'Billed' : 'Unbilled';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${trip.id}</td>
+                    <td>${client ? client.name : 'Unknown'}</td>
+                    <td>${vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown'}</td>
+                    <td>${formatDate(trip.date)}</td>
+                    <td>${trip.distance}</td>
+                    <td>$${amount.toFixed(2)}</td>
+                    <td>${status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update pending invoices
+            const pendingInvoices = invoices.filter(invoice => !invoice.paid);
+            const pendingTbody = document.querySelector('#pending-invoices-table tbody');
+            pendingTbody.innerHTML = '';
+            
+            pendingInvoices.forEach(invoice => {
+                const client = clients.find(c => c.id == invoice.clientId);
+                const invoiceTrips = trips.filter(t => t.invoiceId == invoice.id);
+                const totalAmount = invoiceTrips.reduce((sum, trip) => sum + calculateTripAmount(trip), 0);
+                const status = getInvoiceStatus(invoice);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${client ? client.name : 'Unknown'}</td>
+                    <td>${formatDate(invoice.date)}</td>
+                    <td>$${totalAmount.toFixed(2)}</td>
+                    <td>${formatDate(invoice.dueDate)}</td>
+                    <td>${status}</td>
+                `;
+                pendingTbody.appendChild(row);
+            });
+        }
+
+        // Utility functions
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `alert alert-${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+
+<select id="lang" onchange="switchLanguage(this.value)" style="position:fixed;top:10px;right:10px;padding:6px;">
+  <option value="en">English</option>
+  <option value="hi">हिंदी</option>
+  <option value="bn">বাংলা</option>
+  <option value="ur">اردو</option>
+  <option value="zh">中文</option>
+</select>
+<script src="translate.js"></script>
+
 </body>
 </html>
